@@ -20,7 +20,7 @@ $(document).ready(function(){
     // var BG_COLOR = "LightGray";
     // var BORDER_COLOR = "LightSlateGray";
     var MIN_SIZE = 1;
-    var MAX_SIZE = 2;
+    var MAX_SIZE = 3;
     var MIN_SPEED = 10;
     var MAX_SPEED = 50;
     var SPEED_SCALE = 0.2;
@@ -30,6 +30,7 @@ $(document).ready(function(){
 
     // some variables
     var blobs;
+    var frameTime = 0; // used to keep time
 
     setup();
 
@@ -41,6 +42,7 @@ $(document).ready(function(){
         stepBlobs(blobs);
         cullBlobs(blobs);
         populateBlobs(blobs);
+        stepTime();
     }, 1000 / FPS);
 
     /**
@@ -96,6 +98,11 @@ $(document).ready(function(){
         }
     }
 
+    function stepTime() {
+        frameTime++;
+        if(frameTime == FPS) frameTime = 0;
+    }
+
     // initial setup stuff
     function setup() {
         blobs = [];
@@ -119,15 +126,26 @@ $(document).ready(function(){
     * The position is bounded above by xBound. Use the frame's dimensions.
     * Given a range of sizes and a color this function will
     * generate a blob's size and position and return it.
+    *
+    * I want the smaller (farther) particles to move slower,
+    * and the larger (closer) particles
+    * to move faster to give the illusion of depth.
+    * First a speed is randomly generated. Then, based on that speed and
+    * a size is assigned.
     */
     function makeBlob(xBound, yBound, minSize, maxSize, color) {
-        var size = Math.floor(Math.random() * maxSize + minSize)
+        var vy = getRandomInt(MIN_SPEED, MAX_SPEED);
+        // did some algebra. I want vyPercentOfRange = sizePercentOfRange.
+        // Solved for size.
+        var vyPercentOfRange = (vy - MIN_SPEED) / (MAX_SPEED - MIN_SPEED);
+        var size = vyPercentOfRange * (maxSize - minSize) + minSize;
+
         return {
-            x: Math.floor(Math.random() * xBound + 0),
+            x: getRandomInt(0, xBound),
             y: 0 - size,
             color: color,
             size: size,
-            vy: getRandomInt(MIN_SPEED, MAX_SPEED)
+            vy: vy
         };
     }
 

@@ -62,15 +62,14 @@ $(document).ready(function(){
     }
 
     function drawBlobs(blobs) {
-        drawBackground(BG_COLOR, BORDER_COLOR, w, h, Canvas);
+        Canvas.drawBackground(BG_COLOR, BORDER_COLOR);
         for (var i = 0; i < blobs.length; i++) {
-            drawRect(
+            Canvas.drawRect(
                 blobs[i].color,
                 blobs[i].color,
                 {x : blobs[i].x, y : blobs[i].y},
                 blobs[i].size,
-                blobs[i].size,
-                Canvas
+                blobs[i].size
             );
         }
     }
@@ -109,16 +108,16 @@ $(document).ready(function(){
         populateBlobs(blobs);
     }
 
+    function setupFrame() {
+        w = window.innerWidth; // fill the window
+        h = window.innerHeight;
+        Canvas.setCanvasSize(w, h);
+    }
+
     // resizes the canvas when the window size changes
     $(window).resize(function() {
         setupFrame();
     });
-
-    function setupFrame() {
-        w = window.innerWidth; // fill the window
-        h = window.innerHeight;
-        setCanvasSize(w, h, Canvas);
-    }
 
     /**
     * a blob is an object.
